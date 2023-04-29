@@ -13,20 +13,44 @@ function RandomCircles() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const minRadius = 5;
-    const maxRadius = 5;
 
-    for (let i = 0; i < numCircles; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const radius = Math.random() * (maxRadius - minRadius) + minRadius;
-      const color = "red";
+    const circles = [];
+    let i = 0;
+    while (i < numCircles) {
+      const radius = 20;
+      const x = Math.random() * (canvas.width - radius * 2) + radius;
+      const y = Math.random() * (canvas.height - radius * 2) + radius;
+      let overlapping = false;
+      for (let j = 0; j < circles.length; j++) {
+        const other = circles[j];
+        const distance = Math.hypot(x - other.x, y - other.y);
+        if (distance < radius + other.radius) {
+          overlapping = true;
+          break;
+        }
+      }
+      if (!overlapping) {
+        const color = ["#4998C9"][Math.floor(Math.random() * 1)];
+        const number = i + 1;
+        circles.push({ x, y, radius, color, number });
+        i++;
+      }
+    }
 
+    circles.forEach(({ x, y, radius, color, number }) => {
+      // Draw the circle
       ctx.beginPath();
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
-    }
+
+      // Draw the number
+      ctx.font = `${radius}px Arial`;
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(number, x, y);
+    });
   }, [numCircles]);
 
   const handleInputChange = (event) => {
