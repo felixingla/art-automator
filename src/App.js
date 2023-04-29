@@ -1,69 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-function getRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
+function RandomCircles() {
+  const [numCircles, setNumCircles] = useState(1000);
+  const canvasRef = useRef(null);
+  const inputRef = useRef(null);
 
-function getRandomShape() {
-  const shapes = ["circle", "square", "triangle"];
-  return shapes[Math.floor(Math.random() * shapes.length)];
-}
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
 
-function getRandomRadius() {
-  return Math.floor(Math.random() * 50) + 50;
-}
+    // Set canvas dimensions to match viewport
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-function getRandomOffset() {
-  return Math.floor(Math.random() * 30) - 15;
-}
+    const minRadius = 5;
+    const maxRadius = 5;
 
-function App() {
-  const [shapes, setShapes] = useState([]);
+    for (let i = 0; i < numCircles; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const radius = Math.random() * (maxRadius - minRadius) + minRadius;
+      const color = "red";
 
-  const handleClick = () => {
-    const newShapes = [];
-    for (let i = 0; i < 3; i++) {
-      const shape = {
-        id: i,
-        type: getRandomShape(),
-        color: getRandomColor(),
-        radius: getRandomRadius(),
-        offset: getRandomOffset(),
-      };
-      newShapes.push(shape);
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = color;
+      ctx.fill();
     }
-    setShapes(newShapes);
+  }, [numCircles]);
+
+  const handleInputChange = (event) => {
+    setNumCircles(event.target.value);
+  };
+
+  const handleInputEnter = (event) => {
+    if (event.key === "Enter") {
+      setNumCircles(inputRef.current.value);
+    }
   };
 
   return (
-    <div style={{ backgroundColor: "black", height: "100vh" }}>
-      <h1 style={{ color: "white" }}></h1>
-      <button onClick={handleClick}>Draw Shapes</button>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        {shapes.map((shape) => (
-          <div
-            key={shape.id}
-            style={{
-              width: `${shape.radius}px`,
-              height: `${shape.radius}px`,
-              backgroundColor: shape.color,
-              margin: "20px",
-              borderRadius: "50% / 60%",
-              transform:
-                shape.type === "triangle"
-                  ? `rotate(-45deg) translate(${shape.offset}px, ${shape.offset}px)`
-                  : `translate(${shape.offset}px, ${shape.offset}px)`,
-            }}
-          ></div>
-        ))}
-      </div>
+    <div>
+      <canvas ref={canvasRef} />
+      <input
+        ref={inputRef}
+        type="number"
+        value={numCircles}
+        onChange={handleInputChange}
+        onKeyDown={handleInputEnter}
+        style={{ position: "absolute", top: "10px", left: "10px" }}
+      />
     </div>
   );
 }
 
-export default App;
+export default RandomCircles;
