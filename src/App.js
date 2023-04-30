@@ -10,8 +10,10 @@ function RandomCircles() {
     const ctx = canvas.getContext("2d");
 
     // Set canvas dimensions to match viewport
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth * 2;
+    canvas.height = window.innerHeight * 2;
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
 
     const circles = [];
     let i = 0;
@@ -33,6 +35,10 @@ function RandomCircles() {
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
+      // Draw the border
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#F1F1EF";
+      ctx.stroke();
     });
   };
 
