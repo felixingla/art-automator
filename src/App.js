@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+document.title = 'RandomCircles()';
 
 // Defining the RandomCircles function component
 function RandomCircles() {
