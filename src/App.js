@@ -1,9 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 function RandomCircles() {
-  const [numCircles, setNumCircles] = useState(10);
+  const [numCircles, setNumCircles] = useState(getRandomNumber(1, 50));
   const canvasRef = useRef(null);
-  const inputRef = useRef(null);
+
+  useEffect(() => {
+    generateCircles();
+  }, [numCircles]);
+
+  function getRandomNumber(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
 
   const generateCircles = () => {
     const canvas = canvasRef.current;
@@ -22,12 +29,14 @@ function RandomCircles() {
       const radius = previousRadius * 1.10;
       const x = Math.random() * (canvas.width - radius * 2) + radius;
       const y = Math.random() * (canvas.height - radius * 2) + radius;
-      const color = ["#4998C9"][Math.floor(Math.random() * 1)];
+      const color = ["#DA615C"][Math.floor(Math.random() * 1)];
       const number = i + 1;
       circles.push({ x, y, radius, color, number });
       i++;
       previousRadius = radius;
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     circles.forEach(({ x, y, radius, color, number }) => {
       // Draw the circle
@@ -37,32 +46,25 @@ function RandomCircles() {
       ctx.fill();
       // Draw the border
       ctx.lineWidth = 1;
-      ctx.strokeStyle = "#F1F1EF";
+      ctx.strokeStyle = "#000";
       ctx.stroke();
+
+      // Display radius in circle center
+      ctx.fillStyle = "#fff";
+      ctx.font = "14px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(radius + "px", x, y + 4);
     });
   };
 
-  const handleInputChange = (event) => {
-    setNumCircles(event.target.value);
-  };
-
-  const handleInputEnter = (event) => {
-    if (event.key === "Enter") {
-      generateCircles();
-    }
+  const handleRefreshClick = () => {
+    setNumCircles(getRandomNumber(1, 100));
   };
 
   return (
     <div>
       <canvas ref={canvasRef} />
-      <input
-        ref={inputRef}
-        type="number"
-        value={numCircles}
-        onChange={handleInputChange}
-        onKeyDown={handleInputEnter}
-        style={{ position: "absolute", top: "10px", left: "10px" }}
-      />
+      <button onClick={handleRefreshClick}>Refresh</button>
     </div>
   );
 }
