@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 
 function RandomCircles() {
-  const [numCircles, setNumCircles] = useState(1000);
+  const [numCircles, setNumCircles] = useState(10);
   const canvasRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(() => {
+  const generateCircles = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
@@ -13,28 +13,18 @@ function RandomCircles() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-
     const circles = [];
     let i = 0;
+    let previousRadius = 10;
     while (i < numCircles) {
-      const radius = 20;
+      const radius = previousRadius * 1.10;
       const x = Math.random() * (canvas.width - radius * 2) + radius;
       const y = Math.random() * (canvas.height - radius * 2) + radius;
-      let overlapping = false;
-      for (let j = 0; j < circles.length; j++) {
-        const other = circles[j];
-        const distance = Math.hypot(x - other.x, y - other.y);
-        if (distance < radius + other.radius) {
-          overlapping = true;
-          break;
-        }
-      }
-      if (!overlapping) {
-        const color = ["#4998C9"][Math.floor(Math.random() * 1)];
-        const number = i + 1;
-        circles.push({ x, y, radius, color, number });
-        i++;
-      }
+      const color = ["#4998C9"][Math.floor(Math.random() * 1)];
+      const number = i + 1;
+      circles.push({ x, y, radius, color, number });
+      i++;
+      previousRadius = radius;
     }
 
     circles.forEach(({ x, y, radius, color, number }) => {
@@ -43,15 +33,8 @@ function RandomCircles() {
       ctx.arc(x, y, radius, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
-
-      // Draw the number
-      ctx.font = `${radius}px Arial`;
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(number, x, y);
     });
-  }, [numCircles]);
+  };
 
   const handleInputChange = (event) => {
     setNumCircles(event.target.value);
@@ -59,7 +42,7 @@ function RandomCircles() {
 
   const handleInputEnter = (event) => {
     if (event.key === "Enter") {
-      setNumCircles(inputRef.current.value);
+      generateCircles();
     }
   };
 
